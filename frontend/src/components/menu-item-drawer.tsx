@@ -94,12 +94,14 @@ export function MenuItemDrawer({
         <form onSubmit={handleSubmit(handleSubmitMenuItem)}>
           <h3>{editMode ? 'Update product' : 'Add new product'}</h3>
           <TextField
+            id="title"
             variant="outlined"
             label="Product name"
             sx={{ width: '100%', mt: 1, mb: 1 }}
             {...register('title')}
           />
           <TextField
+            id="description"
             variant="outlined"
             label="Description"
             sx={{ width: '100%', mt: 1, mb: 1 }}
@@ -122,6 +124,7 @@ export function MenuItemDrawer({
           </FormControl>
 
           <Autocomplete
+            id="category"
             disablePortal
             defaultValue={category}
             onChange={(_, value) => {
@@ -138,11 +141,13 @@ export function MenuItemDrawer({
               sx={{ width: '100%', mt: 5 }}
               type="submit"
               disabled={isLoading}
+              className="submit-button"
             >
               Update item
             </Button>
           ) : (
             <Button
+              className="submit-button"
               variant="contained"
               sx={{ width: '100%', mt: 5 }}
               type="submit"

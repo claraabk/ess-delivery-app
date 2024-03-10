@@ -82,7 +82,7 @@ export function MenuItem({
   }
 
   return (
-    <>
+    <div className="menu-item">
       <MenuItemDrawer
         open={openMenuDrawer}
         handleClose={handleCloseMenuDialog}
@@ -119,8 +119,13 @@ export function MenuItem({
               marginRight: 2,
             }}
           >
-            <Edit onClick={handleOpenMenuDialog} sx={{ cursor: 'pointer' }} />
+            <Edit
+              onClick={handleOpenMenuDialog}
+              sx={{ cursor: 'pointer' }}
+              className="edit-menu-item-button"
+            />
             <DeleteOutline
+              className="delete-menu-item-button"
               sx={{
                 color: 'red',
               }}
@@ -133,6 +138,6 @@ export function MenuItem({
           </Button>
         )}
       </Card>
-    </>
+    </div>
   )
 }

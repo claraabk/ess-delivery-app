@@ -56,6 +56,7 @@ export function Restaurant() {
           >
             {isAdmin && (
               <Button
+                className="add-menu-item-button"
                 variant="contained"
                 sx={{ width: '100%' }}
                 onClick={handleOpenMenuDrawer}
