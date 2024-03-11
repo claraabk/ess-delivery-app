@@ -65,7 +65,8 @@ model Restaurant {
   type        String
   picture     String?
   categories  Category[]
-
+  promotions  Promotion[]
+  
   @@map("restaurant")
 }
 
@@ -96,9 +97,11 @@ model Promotion {
   name        String
   description String
   discount    Int
-  startDate   String
-  endDate     String
+  startDate   DateTime
+  endDate     DateTime
   menuItems   Menu[]
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 
   @@map("promotion")
 }

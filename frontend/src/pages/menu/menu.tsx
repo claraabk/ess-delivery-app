@@ -97,6 +97,10 @@ export function Menu() {
                 <Button variant="contained" onClick={handleOpenMenuDrawer}>
                   Criar item
                 </Button>
+
+                <Button variant="contained">
+                  Promoções
+                </Button>
               </div>
             )}
           </div>

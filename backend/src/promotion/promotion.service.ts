@@ -32,6 +32,7 @@ export class PromotionService {
         discount: CreatePromotionDto.discount,
         startDate: CreatePromotionDto.startDate,
         endDate: CreatePromotionDto.endDate,
+        restaurantId: CreatePromotionDto.restaurantId,
         menuItems: {
           connect: menuItemsData,
         },
@@ -43,6 +44,7 @@ export class PromotionService {
         discount: true,
         startDate: true,
         endDate: true,
+        restaurantId: true,
         menuItems: {
           select: {
             id: true,
@@ -70,10 +72,10 @@ export class PromotionService {
 
     return await this.prisma.promotion.update({
       where: { id },
-      data: {name: UpdatePromotionDto.name || existingPromotion.name,
+      data: {
+        name: UpdatePromotionDto.name || existingPromotion.name,
         description: UpdatePromotionDto.description || existingPromotion.description,
         discount: UpdatePromotionDto.discount || existingPromotion.discount,
-        startDate: UpdatePromotionDto.startDate || existingPromotion.startDate,
         endDate: UpdatePromotionDto.endDate || existingPromotion.endDate,
       },
     });
