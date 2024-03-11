@@ -14,14 +14,6 @@ When Eu clico em “Excluir” para o cartão com número “************4823”
 Then Eu vejo uma mensagem de confirmação para a exclusão do cartão
 And O cartão com número “************4823” não está mais na lista de cartões cadastrados
 
-Scenario: Cadastrar um Novo Cupom
-Given Eu estou no menu “Cupons de Desconto”
-And O usuário de username “clara_abk” não tem o cupom com código “DESC10” cadastrado
-When Eu clico em “Adicionar novo cupom”
-And Eu cadastro o cupom com código “DESC10” e percentual de desconto “10%”
-Then Eu vejo uma mensagem de confirmação
-And Eu vejo o cupom com código “DESC10” na lista de cupons cadastrados
-
 Scenario: Pagamento por PIX ao Fazer um Pedido
 Given Eu estou no menu de “Pagamento”
 And Eu adicionei itens ao meu carrinho de compras
@@ -32,8 +24,31 @@ And Eu completo o pagamento usando meu aplicativo de banco
 And Eu recebo uma confirmação do restaurante sobre o recebimento do pagamento por PIX
 And O status do meu pedido é atualizado para "Em Preparo"
 
+SERVICE:
+
 Scenario: Adicionar um novo cartão como forma de pagamento 
-Given Um usuário cadastrado no sistema com id “3”
-When Eu faço uma requisição POST para a rota “/usuario/3/pagamento” com Numero “************4823”, com o CVV “X”,  Data de Validade “Y” e nome do titular “Maria Kenderessy”
-Then Eu recebo uma resposta 200
-And A resposta JSON deve conter “Cartão Cadastrado”
+Given Eu não tenho nenhum cartão cadastrado com número "942039473732"
+When Eu faço uma requisição POST para a rota “/payment” com Numero “942039473732”, com o CVV “390”,  Data de Validade “11/10”, nome do titular “Maria Kenderessy” a type "credit"
+Then Eu recebo uma resposta 204
+And A resposta JSON deve conter um JSON com as informações do cartão
+
+Scenario: Listar todos os cartões de um usuário
+Given Eu tenho o cartão de número “2023932384729” cadastrado 
+And Eu tenho o cartão de número “2384023947322”
+When Eu faço uma requisição GET para a rota “/payment” 
+Then Eu recebo uma resposta 204
+And A resposta JSON deve conter um array com as informações de todos os cartões
+
+Scenario: Listar as informações de um cartão
+Given Eu tenho o cartão de número “2023932384729” cadastrado 
+When Eu faço uma requisição GET para a rota “/payment/2023932384729” 
+Then Eu recebo uma resposta 204
+And A resposta JSON deve conter um o número, CVV, data de validade do cartão, nome e tipo
+
+Scenario: Atualizar o número do cartão cadastrado
+Given Eu tenho o cartão de número “2023932384729” cadastrado
+When Eu faço uma requisição PATCH para a rota “/payment/2023932384729” com o body {"number": 2023932384728”}
+Then Eu recebo uma resposta 204
+And A resposta JSON deve conter os novos dados do cartão.
+
+
