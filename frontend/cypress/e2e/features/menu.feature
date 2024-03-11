@@ -9,7 +9,7 @@ Feature: Cardapio
 
   Scenario: 2. Atualização de um item do cardápio bem sucedida
       Given que o usuário admin está na página "restaurants/admin/:restaurantId"
-      When o usuário clica no botão para editar o primeiro item da lista
+      When o usuário clica no botão para editar o item com nome de "Hamburguer"
       Then modifico o nome do item para "Hamburguer editado", descrição "editada", preço "25.00", quantitade "2" e a primeira categoria
       When clico para salvar as informações inseridas
       Then o item é atualizado para o novo nome "Hamburguer editado"
@@ -26,4 +26,4 @@ Feature: Cardapio
 
   Scenario: 4. Leitura de todos os itens do cardápio de um restaurante
       Given que o usuário admin está na página "restaurants/admin/:restaurantId"
-      Then visualizo os itens "Hamburguer" e "Hamburguer editado"
+      Then visualizo o item "Hamburguer editado"

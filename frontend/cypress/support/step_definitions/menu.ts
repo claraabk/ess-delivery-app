@@ -38,9 +38,15 @@ Then(
 )
 
 // Scenario: Atualização de um item do cardápio bem sucedida
-When('o usuário clica no botão para editar o primeiro item da lista', () => {
-  cy.get('svg[data-testid="edit-icon"]').first().click()
-})
+When(
+  'o usuário clica no botão para editar o item com nome de {string}',
+  (itemName: string) => {
+    cy.contains('div', itemName)
+      .parent()
+      .find('svg[data-testid="edit-icon"]')
+      .click()
+  },
+)
 
 Then(
   'modifico o nome do item para {string}, descrição {string}, preço {string}, quantitade {string} e a primeira categoria',
@@ -60,7 +66,6 @@ Then('o item é atualizado para o novo nome {string}', (itemName: string) => {
 
 // Scenario: Deleção de um item do cardápio bem sucedida
 When('seleciono a opção de deletar o item {string}', (itemTitle: string) => {
-  // Click on the delete icon of the item with the specified title
   cy.contains('div', itemTitle)
     .parent()
     .find('svg[data-testid="delete-icon"]')
@@ -83,10 +88,6 @@ Then(
 )
 
 // Scenario: Leitura de todos os itens do cardápio de um restaurante
-Then(
-  'visualizo os itens {string} e {string}',
-  (firstItemName: string, secondItemName: string) => {
-    cy.contains(firstItemName).should('exist')
-    cy.contains(secondItemName).should('exist')
-  },
-)
+Then('visualizo o item {string}', (firstItemName: string) => {
+  cy.contains(firstItemName).should('exist')
+})
