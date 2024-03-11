@@ -3,7 +3,8 @@ export class Promotion {
     name: string
     description: string
     discount: number
-    startDate: string
-    endDate: string   
+    startDate: Date
+    endDate: Date   
     menuItens: string[]
+    restaurantId: string
 }

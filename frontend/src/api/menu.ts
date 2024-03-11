@@ -41,6 +41,17 @@ export async function getAllCategories({
   return response.data
 }
 
+// export async function getAllMenuItemsFromRestaurant(restaurantId: GetAllCategoriesParams) {
+//   const response = api.get<MenuItem[]>(
+//     `/menu`
+// )
+// const promotions: MenuItem[] = (await response).data
+// return promotions.filter((promotion) => promotion.restaurantId === restaurantId)
+
+
+
+// }
+
 export async function createMenuItem(menuItem: MenuItemBody) {
   await api.post('/menu', {
     title: menuItem.title,
