@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   getRestaurant,
   Restaurant,
@@ -14,6 +14,7 @@ import { MenuItemBody, createMenuItem } from '../../api/menu'
 
 export function Menu() {
   const location = useLocation()
+  const navigate = useNavigate()
   const isAdmin = location.pathname.includes('admin')
 
   const { id } = useParams()
@@ -98,7 +99,8 @@ export function Menu() {
                   Criar item
                 </Button>
 
-                <Button variant="contained">
+                <Button variant="contained" onClick={() =>
+            navigate(`/restaurants/admin/${restaurant.id}/promotion`)}>
                   Promoções
                 </Button>
               </div>

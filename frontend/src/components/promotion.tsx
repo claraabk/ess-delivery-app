@@ -10,11 +10,11 @@ import { PromotionDrawer } from './promotionDrawer'
 interface PromotionProps {
   promotion: Promotion
   refetch: () => void
+  restaurantId: string
 }
 
-export const PromotionItem = ({promotion, refetch}: PromotionProps) => {
+export const PromotionItem = ({promotion, refetch, restaurantId}: PromotionProps) => {
     const navigate = useNavigate()
-    const isAdmin = location.pathname.includes('admin')
     const [openEditPromotionDialog, setOpenEditPromotionDialog] = useState(false)
     const [openDeletePromotion, setOpenDeletePromotionDialog] = useState(false)
     
@@ -36,33 +36,25 @@ export const PromotionItem = ({promotion, refetch}: PromotionProps) => {
               refetch={refetch}
               initialValues={promotion}
               editMode
+              restaurantId={restaurantId||''}
             />
-            <DeletePromotionDialog
+            {/* <DeletePromotionDialog
               key={promotion.id}
               handleClose={() => setOpenDeletePromotionDialog(false)}
               open={openDeletePromotion}
               refetch={refetch}
               promotionId={promotion.id}
-            />
-            <Box
-              onClick={() =>
-                navigate(
-                  isAdmin
-                    ? `/promotions/admin/${promotion.id}`
-                    : `/promotions/${promotion.id}`,
-                )
-              }
-              width="100%"
-            >
+            /> */}
+            <Box>
               <Typography fontWeight="bold">
                 {promotion.name}
               </Typography>
-              <Typography variant="subtitle1">
+              {/* <Typography variant="subtitle1">
                 {item.type} - Funcionando até{' '}
                 {format(new Date(item.closingTime), 'HH:mm')}
-              </Typography>
+              </Typography> */}
             </Box>
-            {isAdmin && (
+            {(
               <Box display="flex">
                 <Edit
                   onClick={() => setOpenEditPromotionDialog(true)}

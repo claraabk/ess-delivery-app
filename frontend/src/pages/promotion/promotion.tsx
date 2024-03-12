@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { Box, Button, Divider, Stack, Typography } from '@mui/material'
 import { getAllPromotionsFromRestaurant } from '../../api/promotion'
 import { PromotionItem } from '../../components/promotion'
-// import { PromotionDrawer } from '../../components/promotionDrawer'
+import { PromotionDrawer } from '../../components/promotionDrawer'
 
 export const Promotion = () => {
 
@@ -14,24 +14,25 @@ export const Promotion = () => {
   //const [restaurant, setRestaurant] = useState({} as Restaurant)
   const {
     data: result,
-    refetch,
-    isFetching
-  } = useQuery({
-    queryKey: ['promotions', id],
-    queryFn: () => getAllPromotionsFromRestaurant(id || ''),
-  })
+      refetch,
+      isFetching
+    } = useQuery({
+      queryKey: ['promotions', id],
+      queryFn: () => getAllPromotionsFromRestaurant(id || ''),
+    })
 
 
   return (
     <>
       {result && (
         <>
-          {/* <PromotionDrawer
+          <PromotionDrawer
             open={openPromotionDialog}
             handleClose={() => setOpenPromotionDialog(false)}
             refetch={refetch}
             isLoading={isFetching}
-          /> */}
+            restaurantId={id||''}
+          />
           <Box
             sx={{
               display: 'flex',
@@ -59,6 +60,7 @@ export const Promotion = () => {
                 promotion={promotion}
                 refetch={refetch}
                 key={promotion.id}
+                restaurantId={id||''}
               />
             ))}
           </Stack>

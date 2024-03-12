@@ -31,27 +31,42 @@ export async function getAllPromotionsFromRestaurant(restaurantId: string) {
 }
 
 export async function createPromotion(promotion: PromotionBody) {
-    await api.post('/promotion', {
-        name: promotion.name,
-        description: promotion.description,
-        discount: promotion.discount,
-        startDate: promotion.startDate,
-        endDate: promotion.endDate,
-        menuItens: promotion.menuItens,
-        restaurantId: promotion.restaurantId,
-      })
+    try{
+        const response = await api.post('/promotion', {
+            name: promotion.name,
+            description: promotion.description,
+            discount: promotion.discount,
+            startDate: promotion.startDate,
+            endDate: promotion.endDate,
+            menuItens: promotion.menuItens,
+            restaurantId: promotion.restaurantId,
+        })
+        return response.data
+    } catch (error) {
+        return error
+    }
 }
 
 export async function updatePromotion(promotion: PromotionBody) {
-    await api.patch(`/promotion/${promotion.id}`, {
-        name: promotion.name,
-        description: promotion.description,
-        discount: promotion.discount,
-        endDate: promotion.endDate,
-    })
+    try {
+        const response = await api.patch(`/promotion/${promotion.id}`, {
+            name: promotion.name,
+            description: promotion.description,
+            discount: promotion.discount,
+            endDate: promotion.endDate,
+        })
+        return response.data
+    } catch(error) {
+        return error
+    }
   }
   
   export async function deletePromotion(promotionId: string) {
-    await api.delete(`/promotion/${promotionId}`)
-  }
+    try{
+        const response = await api.delete(`/promotion/${promotionId}`)
+        return response.data
+    } catch(error) {
+        return error
+    }
+}
   

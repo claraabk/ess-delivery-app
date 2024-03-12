@@ -27,13 +27,9 @@ export interface Category {
   menuItems: MenuItem[]
 }
 
-interface GetAllCategoriesParams {
-  restaurantId: string
-}
 
-export async function getAllCategories({
-  restaurantId,
-}: GetAllCategoriesParams) {
+
+export async function getAllCategories(restaurantId:string) {
   const response = await api.get<Category[]>(
     `/categories/restaurant/${restaurantId}`,
   )
@@ -41,16 +37,20 @@ export async function getAllCategories({
   return response.data
 }
 
-// export async function getAllMenuItemsFromRestaurant(restaurantId: GetAllCategoriesParams) {
-//   const response = api.get<MenuItem[]>(
-//     `/menu`
-// )
-// const promotions: MenuItem[] = (await response).data
-// return promotions.filter((promotion) => promotion.restaurantId === restaurantId)
+export async function getAllMenuItemsFromRestaurant(restaurantId: string) {
+  
+  const itens: MenuItem[] = []
+  const categories: Category[] = await getAllCategories(restaurantId)
 
+  for (const category of categories) {
+    const response = await api.get<MenuItem[]>(
+      `/menu/${category.id}/items`
+    )
+    itens.push(...response.data)
+  }
 
-
-// }
+  return itens;
+}
 
 export async function createMenuItem(menuItem: MenuItemBody) {
   await api.post('/menu', {

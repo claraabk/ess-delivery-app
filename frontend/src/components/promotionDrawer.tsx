@@ -1,4 +1,4 @@
-import { Box, Button, Drawer, FormControl, TextField } from '@mui/material'
+import { Box, Button, Drawer, FormControl, Select, TextField } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { TimePicker } from '@mui/x-date-pickers'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,8 +6,8 @@ import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
 
-import { Promotion, createPromotion, updatePromotion } from '../api/promotion'
-import { MenuItem } from '../api/menu'
+import { Promotion, PromotionBody, createPromotion, updatePromotion } from '../api/promotion'
+import { MenuItem, getAllMenuItemsFromRestaurant } from '../api/menu'
 import { useParams } from 'react-router-dom'
 
 interface PromotionDrawerProps {
@@ -17,28 +17,20 @@ interface PromotionDrawerProps {
   isLoading?: boolean
   initialValues?: Promotion
   editMode?: boolean
+  restaurantId: string
 }
 
-const promotionSchema = z.object({
-    name: z.string().min(1),
-    description: z.string().min(1),
-    discount: z.number().min(0),
-    startDate: z.date(),
-    endDate: z.date(),
-    menuItems: z.array(z.string()).min(1),
-    restaurantId: z.string(),
-  });
+
   
-  type PromotionSchema = z.infer<typeof promotionSchema>;
   
-  export function PromotionsDrawer({
+  export function PromotionDrawer({
     open,
     handleClose,
     refetch,
     isLoading,
-    editMode,
     initialValues,
     editMode,
+    restaurantId,
   }: PromotionDrawerProps) {
 
     const  { id }  = useParams()
@@ -70,38 +62,43 @@ const promotionSchema = z.object({
       setValue,
       reset,
       formState: { errors },
-    } = useForm<PromotionSchema>({
-      resolver: zodResolver(promotionSchema),
+    } = useForm<PromotionBody>({
       defaultValues: {
         ...initialValues,
       },
     });
   
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+
+    const [selectedMenuItems, setSelectedMenuItems] = useState<string[]>(
+      initialValues?.menuItens || []
+    );
   
     useEffect(() => {
       async function fetchMenuItems() {
-        const menuItemsData = await getAllMenuItemsFromRestaurant(id);
+        const menuItemsData = await getAllMenuItemsFromRestaurant(id || '');
         setMenuItems(menuItemsData);
       }
   
       fetchMenuItems();
     }, []);
   
-    async function handleSubmitPromotion(data: PromotionSchema) {
-      const response = await createPromotionFn(data);
+    async function handleSubmitPromotion(data: PromotionBody)
+     {
+     
+      const response = await createPromotionFn({...data, restaurantId});
       if (response.code === 'ERR_BAD_REQUEST') {
         alert('Erro ao criar a promoção');
       } else {
         handleClose();
         reset();
-        setSelectedStartDate(null);
-        setSelectedEndDate(null);
+        setStartDate(null);
+        setEndDate(null);
         refetch();
       }
     }
   
-    async function handleEditPromotion(data: PromotionSchema) {
+    async function handleEditPromotion(data: PromotionBody) {
       const payload = { ...data, id: initialValues?.id };
       const response = await updatePromotionFn(payload);
       if (response.code === 'ERR_BAD_REQUEST') {
@@ -113,86 +110,133 @@ const promotionSchema = z.object({
       }
     }
 
-  return (
-    <Drawer anchor="bottom" open={open} onClose={handleClose}>
-      <Box sx={{ px: 1, mb: 2 }}>
-        <form
-          onSubmit={handleSubmit(
-            editMode ? handleEditRestaurant : handleSubmitRestaurant,
-          )}
-        >
-          <h3>{editMode ? 'Atualizar Restaurante' : 'Criar Restaurante'}</h3>
-          <TextField
-            variant="outlined"
-            label="Nome"
-            sx={{ width: '100%', mt: 1, mb: 1 }}
-            error={!!errors.name}
-            helperText={
-              errors.name?.message
-                ? 'Esse campo não pode estar vazio'
-                : undefined
-            }
-            {...register('name')}
-          />
-          <TextField
-            variant="outlined"
-            label="Endereço"
-            sx={{ width: '100%', mt: 1, mb: 1 }}
-            error={!!errors.address}
-            helperText={
-              errors.address?.message
-                ? 'Esse campo não pode estar vazio'
-                : undefined
-            }
-            {...register('address')}
-          />
-          <FormControl sx={{ width: '100%', mt: 1, mb: 1 }}>
-            <TimePicker
-              ampm={false}
-              sx={{ width: '100%', mt: 1, mb: 1 }}
-              label="Horário de fechamento"
-              value={selectedTime}
-              timezone="UTC"
-              slotProps={{
-                textField: {
-                  error: !!errors.closingTime,
-                  helperText: errors.closingTime?.message
-                    ? 'Esse campo não pode estar vazio'
-                    : undefined,
-                },
-              }}
-              onChange={(value) => {
-                setSelectedTime(value)
-                if (value) {
-                  setValue('closingTime', value)
-                }
-              }}
-            />
-          </FormControl>
-          <FormControl sx={{ width: '100%', mt: 1, mb: 1 }}>
+    const handleSelectChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+      const selectedIds = event.target.value as string[];
+      setSelectedMenuItems(selectedIds);
+      setValue('menuItens', selectedIds);
+    };
+
+    return (
+      <Drawer anchor="bottom" open={open} onClose={handleClose}>
+        <Box sx={{ px: 1, mb: 2 }}>
+          <form
+            onSubmit={handleSubmit(editMode ? handleEditPromotion : handleSubmitPromotion)}
+          >
+            <h3>{editMode ? 'Atualizar Promoção' : 'Criar Promoção'}</h3>
             <TextField
               variant="outlined"
-              label="Tipo"
+              label="Nome"
               sx={{ width: '100%', mt: 1, mb: 1 }}
-              error={!!errors.type}
+              error={!!errors.name}
               helperText={
-                errors.type?.message
+                errors.name?.message
                   ? 'Esse campo não pode estar vazio'
                   : undefined
               }
-              {...register('type')}
+              {...register('name')}
             />
-          </FormControl>
-          
-          <Button
-            variant="contained"
-            sx={{ width: '100%', mt: 5 }}
-            type="submit"
-          >
-            Salvar
-          </Button>
-        </form>
-      </Box>
-    </Drawer>
-  )
+            <TextField
+              variant="outlined"
+              label="Descrição"
+              sx={{ width: '100%', mt: 1, mb: 1 }}
+              error={!!errors.description}
+              helperText={
+                errors.description?.message
+                  ? 'Esse campo não pode estar vazio'
+                  : undefined
+              }
+              {...register('description')}
+            />
+            <TextField
+              variant="outlined"
+              label="Desconto"
+              type="number"
+              sx={{ width: '100%', mt: 1, mb: 1 }}
+              error={!!errors.discount}
+              helperText={
+                errors.discount?.message
+                  ? 'Esse campo não pode estar vazio'
+                  : undefined
+              }
+              {...register('discount',{ valueAsNumber: true })}
+            />
+            
+            <FormControl sx={{ width: '100%', mt: 1, mb: 1 }}>
+              <Select
+              
+                variant="outlined"
+                label="Itens do Menu"
+                multiple
+                {...register('menuItens')}
+                value={selectedMenuItems}
+                onChange={handleSelectChange as any}
+              >
+                {menuItems.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.title}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+  
+            <FormControl sx={{ width: '100%', mt: 1, mb: 1 }}>
+              <TimePicker
+                ampm={false}
+                sx={{ width: '100%', mt: 1, mb: 1 }}
+                label="Data de Início"
+                value={startDate}
+                timezone="UTC"
+                slotProps={{
+                  textField: {
+                    error: !!errors.startDate,
+                    helperText: errors.startDate?.message
+                      ? 'Esse campo não pode estar vazio'
+                      : undefined,
+                  },
+                }}
+                onChange={(value) => {
+                  setStartDate(value);
+                  if (value) {
+                    setValue('startDate', value);
+                  }
+                }}
+              />
+            </FormControl>
+  
+            <FormControl sx={{ width: '100%', mt: 1, mb: 1 }}>
+              <TimePicker
+                ampm={false}
+                sx={{ width: '100%', mt: 1, mb: 1 }}
+                label="Data de Término"
+                value={endDate}
+                timezone="UTC"
+                slotProps={{
+                  textField: {
+                    error: !!errors.endDate,
+                    helperText: errors.endDate?.message
+                      ? 'Esse campo não pode estar vazio'
+                      : undefined,
+                  },
+                }}
+                onChange={(value) => {
+                  setEndDate(value);
+                  if (value) {
+                    setValue('endDate', value);
+                  }
+                }}
+              />
+            </FormControl>
+  
+            <Button
+              variant="contained"
+              sx={{ width: '100%', mt: 5 }}
+              type="submit"
+              disabled={isLoading}
+            >
+              Salvar
+            </Button>
+          </form>
+        </Box>
+      </Drawer>
+    );
 }
